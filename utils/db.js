@@ -16,17 +16,9 @@ class DBClient {
     const port = process.env.DB_PORT || 27017;
     const database = process.env.DB_DATABASE || 'files_manager';
     const dbURL = `mongodb://${host}:${port}/${database}`;
-    this.status = false;
 
     this.client = new mongodb.MongoClient(dbURL, { useUnifiedTopology: true });
-    this.client.connect((err) => {
-      if (!err) {
-        this.status = true;
-        this.db = client.db(DB_DATABASE);
-      } else {
-        this.status = false;
-      }
-    });
+    this.client.connect();
   }
 
   /**
@@ -34,7 +26,7 @@ class DBClient {
    * @returns {boolean}
    */
   isAlive() {
-    return this.status;
+    return this.client.isConnected();
   }
 
   /**
