@@ -147,6 +147,10 @@ export default class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
+    if (file.type === 'folder' && file.userId.toString() !== userId.toString()) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
     res.status(200).json({
       id,
       userId,
