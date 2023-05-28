@@ -177,7 +177,7 @@ export default class FilesController {
     const filesFilter = {
       userId: user._id,
       parentId: parentId === ROOT_FOLDER_ID.toString()
-        ? parentId
+        ? { $exists: true } 
         : new mongoDBCore.BSON.ObjectId(isValidId(parentId) ? parentId : NULL_ID),
     };
 
