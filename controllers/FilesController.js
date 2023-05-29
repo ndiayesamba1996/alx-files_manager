@@ -170,17 +170,16 @@ export default class FilesController {
    */
   static async getIndex(req, res) {
     const { user } = req;
-    const parentId = req.query.parentId || ROOT_FOLDER_ID.toString();
+    const parentId = req.query.parentId;
     const page = /\d+/.test((req.query.page || '').toString())
       ? Number.parseInt(req.query.page, 10)
       : 0;
     const filesFilter = {
       userId: user._id,
-      parentId: parentId === ROOT_FOLDER_ID.toString()
-        ? { $exists: true } 
-        : new mongoDBCore.BSON.ObjectId(isValidId(parentId) ? parentId : NULL_ID),
     };
-
+    if (parentId !== undefined && parentId !== "") {
+      filesFilter.parentId = parentId;
+    }
     const files = await (await (await dbClient.filesCollection())
       .aggregate([
         { $match: filesFilter },
@@ -196,7 +195,7 @@ export default class FilesController {
             type: '$type',
             isPublic: '$isPublic',
             parentId: {
-              $cond: { if: { $eq: ['$parentId', '0'] }, then: 0, else: '$parentId' },
+              $cond: { if: { $eq: ['$parentId', '0'] }, then: '0', else: '$parentId' },
             },
           },
         },
